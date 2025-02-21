@@ -78,8 +78,8 @@ void MMASolver::Update(double *xval, const double *dfdx, const double *gx, const
 	GenSub(xval, dfdx, gx, dgdx, xmin, xmax);
 
 	// Update xolds
-	xold2 = xold1;
-	std::copy_n(xval, n, xold1.data());
+	//xold2 = xold1;
+	//std::copy_n(xval, n, xold1.data());
 
 	// Solve the dual with an interior point method
 	SolveDIP(xval);
@@ -344,7 +344,7 @@ void MMASolver::GenSub(const double *xval, const double *dfdx, const double *gx,
                        const double *xmax)
 {
 	// Forward the iterator
-	iter++;
+	//iter++;
 
 	// Set asymptotes
 	if (iter < 3) {

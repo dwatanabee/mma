@@ -1,29 +1,60 @@
-# MMA and GCMMA
-*A self-contained C++ implementation of MMA and GCMMA.*
+## MMA and GCMMA
+[フォーク元](https://github.com/jdumas/mma)のプログラムから，テキストファイルでMMAとのやり取りができるようなコード(add/file_io.cpp)を追加しました．
 
-[![Build Status](https://travis-ci.org/jdumas/mma.svg?branch=master)](https://travis-ci.org/jdumas/mma)
+## インプットファイル
+インプットファイル"input_mma.txt"の例を以下に示します．
+なお，ここでは材料数2，要素数2，各材料の体積制約付き（制約関数の数をc(=m)とする）のマルチマテリアルトポロジー最適化を有限要素法で解くことを前提とします．
 
-This repository contains single-file C++ implementations of MMA and GCMMA, as described in [1,2,3].
-The code in this repository is based on an original code by Niels Aage, using the subproblem solver described in [4].
-I made some modifications to the original code to be more C++-like (e.g. using `std::vector<>`), and slightly changed the way bounds are computed in the subproblem approximation.
-I have also extended the solver to use the GCMMA method [2,3]. Both the MMA and GCMMA solvers can be found in their respective folder in `src/`.
+~~~
+5
+2
+2
+2
+0.2
+0.4
+1.0
+0.09
+-0.004
+-0.556
+-0.04
+-0.2
+-0.00005
+-0.0011
+100.0
+0.0
+90.0
+0.0
+0.0
+70.0
+0.0
+100.0
+0.0001
+1.0
+~~~
 
-The goal of this project is to provide a minimal, self-contained implementation of MMA and GCMMA which are easy to use and easy to integrate in an existing C++ project.
-The code is still in **beta**, meaning it hasn't been tested extensively, so use at your own risks.
+- 1行目"5"は最適化ステップ数を意味します．
+- 2行目"2"は要素数n，3行目"2"は材料数m，4行目"2"は制約関数数を意味します．
+- 5 ~ 6行目の"0.2"，"0.4"は材料1の設計変数s_i^1 (i=1,2,iは要素番号)を意味し，7~8行目の"1.0"，"0.09"は材料2の設計変数s_i^2 (i=1,2)を意味します(配列要素数m×n)．
+- 9~10行目の"-0.004"，"-0.556"は，設計変数s_i^1 に対する目的関数の感度df/ds_i^1 を意味し，11~12行目の"-0.04"，"-0.2"は，設計変数s_i^2 に対する感度df/ds_i^2 を意味します(配列要素数m×n)．
+- 13~14行目の"-0.00005"，"-0.0011"は，それぞれ材料1，2の（正規化された）体積制約関数の値を意味します．
+例えば，材料1の体積制約関数g^1 は g^1(s)=Σ_i s_i V_i/V^1 -1.0 <= 0 で定義されます．(配列要素数c)
+- 15~16行目の"100.0"，"0.0"は，それぞれg^1 とg^2 の設計変数s_1^1 に対する感度dg^1 / ds_1^1 ，dg^2 /ds_1^1 を意味し，17~22行目も同様に，g^1 とg^2 の設計変数 s_2^1 ，s_1^2 ，s_2^2 に対する感度を意味します．(合計配列要素数m×n×c)
+- 23行目"0.0001"は設計変数の最小値を意味します．
+- 24行目"1.0"は設計変数の最大値を意味します．
 
-## Usage
+## アウトプットファイル
+アウトプットファイル"output_mma.txt"はシンプルであり，要素数（1行目），材料数（2行目），更新された設計変数(3行目～)が
+"input_mma.txt"と同様のフォーマットで返ってきます．
 
-This project use CMake, but you should be able to copy the files directly into your own project, since there are no dependencies.
-Usage should be fairly obvious looking at the header files, but you can also take a look at the examples under the `tests/` folder.
+~~~
+2
+2
+0.15
+0.5
+1.0
+0.01
+~~~
 
-## Other Projects
-
-- [TopOpt_in_PETSc](https://github.com/topopt/TopOpt_in_PETSc): Multi-processor implementation of MMA using MPI and PETCs.
-- [NLopt](https://nlopt.readthedocs.io/en/latest/): Open-source library for nonlinear optimization with bindings in different languages. Contains a different implementation of GCMMA.
-
-## References
-
-1. Svanberg, K. (1987). “The Method of Moving Asymptotes—a New Method for Structural Optimization”. International Journal for Numerical Methods in Engineering, 24(2), 359–373. https://doi.org/10.1002/nme.1620240207.
-2. Svanberg, K. (2002). “A Class of Globally Convergent Optimization Methods Based on Conservative Convex Separable Approximations”. SIAM Journal on Optimization, 12(2), 555–573. https://doi.org/10.1137/s1052623499362822.
-3. Svanberg, K. (2007). MMA and GCMMA - Two Methods for Nonlinear Optimization. Technical report. https://people.kth.se/~krille/mmagcmma.pdf
-4. Aage, N., & Lazarov, B. S. (2013). Parallel framework for topology optimization using the method of moving asymptotes. Structural and Multidisciplinary Optimization, 47(4), 493–505. https://doi.org/10.1007/s00158-012-0869-2
+## その他
+ファイル"old_s1.txt"，"old_s2.txt"は，それぞれ1回前，2回前の設計変数リストです．
+MMAのアルゴリズム上必要になってきます．

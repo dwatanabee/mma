@@ -69,6 +69,18 @@ class MMASolver {
 
 	void Reset() { iter = 0; };
 
+
+	void SetXold(std::vector<double>&xold1_, std::vector<double>&xold2_)
+	{
+		xold1 = xold1_;
+		xold2 = xold2_;
+	}
+
+	void SetIter(int iter_)
+	{
+		iter = iter_;
+	}
+
   private:
 	int n, m, iter;
 
